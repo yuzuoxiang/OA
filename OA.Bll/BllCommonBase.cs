@@ -10,21 +10,20 @@ using System.Threading.Tasks;
 namespace OA.Bll
 {
     /// <summary>
-    /// Bll层通用的增删改查
+    /// Bll层通用的增删改查,这个类里面的所有方法都要声明为静态方法
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class BllCommonBase<T> : BllServiceBase where T : class, new()
     {
-        private static string DbName { get; set; }
+        private static string DBName { get; set; }
 
-        public BllCommonBase() { }
         /// <summary>
         /// 初始化BllBase类
         /// </summary>
-        /// <param name="dbName">连接的数据库名</param>
+        /// <param name="DBName">连接的数据库名</param>
         public BllCommonBase(string dbName)
         {
-            DbName = dbName;
+            DBName = dbName;
         }
 
         #region 通用查询
@@ -34,7 +33,7 @@ namespace OA.Bll
         /// <returns></returns>
         public List<T> GetAll()
         {
-            var db = SugarDao.GetInstance(DbName);
+            var db = SugarDao.GetInstance(DBName);
             var sq = db.Queryable<T>().ToList();
 
             return sq.ToList();
@@ -47,23 +46,48 @@ namespace OA.Bll
         /// <returns></returns>
         public T First(Expression<Func<T, bool>> where)
         {
-            var db = SugarDao.GetInstance(DbName);
-            var sq = db.Queryable<T>().Where(where);
+            return SugarDao.GetInstance(DBName).Queryable<T>().Where(where).First();
+        }
 
-            return sq.First();
+        public T FirstSelect(Expression<Func<T, bool>> where, string select = null, Expression<Func<object, object>> orderBy = null)
+        {
+            var db = SugarDao.GetInstance(DBName);
+            var list = db.Queryable<T>().Where(where);
+            if (select != null || !string.IsNullOrEmpty(select))
+                list.Select(select);
+            var sql = list.ToSql();
+            return list.First();
         }
 
         /// <summary>
-        /// 根据条件查询
+        /// 根据条件判断是否存在数据
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public bool Any(Expression<Func<T, bool>> where)
+        {
+            return SugarDao.GetInstance(DBName).Queryable<T>().Any(where);
+        }
+
+        public int Count(Expression<Func<T, bool>> where)
+        {
+            return SugarDao.GetInstance(DBName).Queryable<T>().Where(where).Count();
+        }
+
+        /// <summary>
+        /// 通用查询
         /// </summary>
         /// <param name="where"></param>
         /// <param name="orderBy"></param>
         /// <param name="select"></param>
         /// <param name="top"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
         /// <returns></returns>
-        public List<T> Queryable(Expression<Func<T, bool>> where, string orderBy = "", Expression<Func<T, object>> select = null, int top = 0)
+        public List<T> Queryable(Expression<Func<T, bool>> where, string orderBy = "", Expression<Func<T, object>> select = null, int top = 0,
+            int? pageSize = null, int? pageIndex = null)
         {
-            var db = SugarDao.GetInstance(DbName);
+            var db = SugarDao.GetInstance(DBName);
             var sq = db.Queryable<T>().Where(where);
 
             if (!string.IsNullOrEmpty(orderBy))
@@ -72,10 +96,34 @@ namespace OA.Bll
             if (select != null)
                 sq.Select(select);
 
-            if (top > 1)
+            if (top > 0)
                 sq.Take(top);
 
-            return sq.ToList();
+            return (pageSize != null && pageIndex != null)
+                ? sq.ToPageList(pageIndex.GetValueOrDefault(), pageSize.GetValueOrDefault())
+                : sq.ToList();
+        }
+
+        public IEnumerable<T> GetSelectList(int top, string cols, string tableName, string where, string orderBy)
+        {
+            string selectCols = "*";
+            if (cols != "")
+                selectCols = cols;
+
+            string topStr = "";
+            if (top > 0)
+                topStr = "top " + top.ToString();
+            string whereStr = "";
+            if (where != "")
+                whereStr += "where " + where;
+            string orderByStr = "";
+            if (orderBy != "")
+                orderByStr = "order by " + orderBy;
+
+            var sql = string.Format("select {0} {1} from {2} {3} {4}", topStr, selectCols, tableName, whereStr, orderByStr);
+            var db = SugarDao.GetInstance(DBName);
+            IEnumerable<T> dataList = db.Ado.SqlQuery<T>(sql);
+            return dataList;
         }
 
         /// <summary>
@@ -89,7 +137,7 @@ namespace OA.Bll
             if (string.IsNullOrEmpty(sql))
                 throw new ArgumentNullException(string.Format("{0}参数不能为空", nameof(sql)));
 
-            var db = SugarDao.GetInstance(DbName);
+            var db = SugarDao.GetInstance(DBName);
             return db.Ado.SqlQuery<T>(sql, sugarParameter);
         }
 
@@ -107,7 +155,7 @@ namespace OA.Bll
         public List<T> QueryableByPage(int pageIndex, int pageSize, ref int totalCount, Expression<Func<T, bool>> where, string orderBy = "",
             Expression<Func<T, object>> select = null, int top = 0)
         {
-            var db = SugarDao.GetInstance(DbName);
+            var db = SugarDao.GetInstance(DBName);
             var sq = db.Queryable<T>().Where(where);
 
             if (!string.IsNullOrEmpty(orderBy))
@@ -121,6 +169,7 @@ namespace OA.Bll
 
             return sq.ToPageList(pageIndex, pageSize, ref totalCount);
         }
+
         #endregion
 
         #region 通用插入
@@ -131,8 +180,19 @@ namespace OA.Bll
         /// <returns></returns>
         public bool Insert(T model)
         {
-            var db = SugarDao.GetInstance(DbName);
+            var db = SugarDao.GetInstance(DBName);
             return db.Insertable(model).ExecuteCommand() > 0;
+        }
+
+        /// <summary>
+        /// 批量插入
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public bool Insert(List<T> list)
+        {
+            var db = SugarDao.GetInstance(DBName);
+            return db.Insertable(list.ToArray()).ExecuteCommand() > 0;
         }
         #endregion
 
@@ -144,10 +204,16 @@ namespace OA.Bll
         /// <returns></returns>
         public bool Delete(Expression<Func<T, bool>> where)
         {
-            var db = SugarDao.GetInstance(DbName);
+            var db = SugarDao.GetInstance(DBName);
             return db.Deleteable(where).ExecuteCommand() > 0;
         }
-        #endregion
+
+        public bool Delete(int id)
+        {
+            var db = SugarDao.GetInstance(DBName);
+            return db.Deleteable<T>().In(id).ExecuteCommand() > 0;
+        }
+        #endregion 
 
         #region 通用修改
         /// <summary>
@@ -161,7 +227,7 @@ namespace OA.Bll
         public bool Update(T model, Expression<Func<T, bool>> where = null, Expression<Func<T, object>> updateColumns = null,
             Expression<Func<T, object>> ignoreColumns = null)
         {
-            var db = SugarDao.GetInstance(DbName);
+            var db = SugarDao.GetInstance(DBName);
             var sq = db.Updateable(model);
 
             if (where != null)
@@ -176,7 +242,24 @@ namespace OA.Bll
             return sq.ExecuteCommand() > 0;
         }
 
+        public bool UpdateBitField(string setField, bool setValue, int id, string tableName)
+        {
+            return SugarDao.GetInstance(DBName).Ado.ExecuteCommand($"update {tableName} set {setField}={(setValue ? 1 : 0)} where Id={id}") > 0;
+        }
+        #endregion
 
+        #region 存储过程
+        public K StoredProcedure<K>(string tableName, SugarParameter[] sugarParameters)
+        {
+            var db = SugarDao.GetInstance(DBName);
+
+            var result = db.Ado.UseStoredProcedure<K>(() =>
+             {
+                 return db.Ado.SqlQueryDynamic(tableName, sugarParameters);
+             });
+
+            return result;
+        }
         #endregion
     }
 }

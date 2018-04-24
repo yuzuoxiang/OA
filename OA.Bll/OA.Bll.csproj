@@ -30,10 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SqlSugar, Version=4.6.4.7, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\sqlSugar.4.6.4.7\lib\SqlSugar.dll</HintPath>
+    <Reference Include="SqlSugar, Version=4.6.4.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\sqlSugar.4.6.4.8\lib\SqlSugar.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -43,11 +44,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base\BllMng_DepartmentClass.cs" />
+    <Compile Include="Base\BllMng_PermissionGroup.cs" />
+    <Compile Include="Base\BllMng_PermissionGroupSet.cs" />
+    <Compile Include="Base\BllMng_PermissionPersonSet.cs" />
+    <Compile Include="Base\BllMng_User.cs" />
+    <Compile Include="Base\BllSys_Class.cs" />
+    <Compile Include="Base\BllSys_MenuClass.cs" />
     <Compile Include="BllCommonBase.cs" />
     <Compile Include="BllServiceBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OA.Model\OA.Model.csproj">
+      <Project>{fbb4b872-bad7-4fb5-9a02-5f13f10fd7fb}</Project>
+      <Name>OA.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OA.Tools\OA.Tools.csproj">
       <Project>{cec28515-3d48-4bf9-b0d9-9231eaa8824a}</Project>
       <Name>OA.Tools</Name>

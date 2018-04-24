@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tools.Redis;
+﻿using Tools.Redis;
 
 namespace Tools.Utility
 {
@@ -11,7 +6,7 @@ namespace Tools.Utility
     {
         static string AdminId = "AdminId";
         static string AdminInfo = "AdminInfo";
-        static bool IsRedisSession = false; //Tools.Special.Common.GetIsRedisSession();
+        static bool IsRedisSession = Tools.Special.Common.GetIsRedisSession();
 
         /// <summary>
         ///  设置登录SESSION
