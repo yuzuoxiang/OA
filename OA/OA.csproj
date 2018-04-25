@@ -183,6 +183,11 @@
     <Content Include="Content\img\adminlte\img\user6-128x128.jpg" />
     <Content Include="Content\img\adminlte\img\user7-128x128.jpg" />
     <Content Include="Content\img\adminlte\img\user8-128x128.jpg" />
+    <Content Include="Content\js\adminlte\app.js" />
+    <Content Include="Content\js\adminlte\app.min.js" />
+    <Content Include="Content\js\adminlte\demo.js" />
+    <Content Include="Content\js\adminlte\pages\dashboard.js" />
+    <Content Include="Content\js\adminlte\pages\dashboard2.js" />
     <Content Include="Content\js\bootstrap\bootstrap.js" />
     <Content Include="Content\js\bootstrap\bootstrap.min.js" />
     <Content Include="Content\js\bootstrap\npm.js" />

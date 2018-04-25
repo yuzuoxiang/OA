@@ -41,6 +41,7 @@ layui.use(['element', 'laytpl', 'layer'], function () {
             $("#main-menu").on('click', 'li', function () {
                 var $this = $(this);
                 //判断是否还有子级
+                console.log(11)
                 if ($this.find("ul").size() == 0) {
                     layer.load(1);
                     var id = $this.find("a").data("id");
