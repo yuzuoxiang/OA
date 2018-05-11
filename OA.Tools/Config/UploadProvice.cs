@@ -7,7 +7,15 @@ namespace Tools.Config
         private static UploadConfig uploadConfig;
         static UploadProvice()
         {
-            uploadConfig = ConfigurationManager.GetSection("UploadConfig") as UploadConfig;
+            try
+            {
+                var dd = ConfigurationManager.GetSection("UploadConfig");
+                uploadConfig = new UploadConfig();
+            }
+            catch (System.Exception ex)
+            {
+                throw;
+            }
         }
         public static UploadConfig Instance()
         {

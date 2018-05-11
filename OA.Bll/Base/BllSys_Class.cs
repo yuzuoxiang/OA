@@ -695,7 +695,7 @@ namespace OA.Bll
             }
 
             string name = sysModel.DepartId > 0 ? "Sys_ClassAddByDepart" : "Sys_ClassAdd";
-            var result = StoredProcedure<int>(name, sugarParameter);
+            var result = StoredProcedureToString(name, sugarParameter).ObjToInt();
 
             return result;
         }
@@ -707,7 +707,7 @@ namespace OA.Bll
         /// <returns></returns>
         public new virtual bool Delete(int id)
         {
-            var result = StoredProcedure<bool>("Sys_ClassDel", new SugarParameter[] {
+            var result = StoredProcedureToBool("Sys_ClassDel", new SugarParameter[] {
                 new SugarParameter("@TableName",tableName,typeof(String)),
                 new SugarParameter("@DelId",id,typeof(Int32)),
                 new SugarParameter("@Flag",false,true)
@@ -718,7 +718,7 @@ namespace OA.Bll
 
         public virtual bool Delete(int id, int departId)
         {
-            var result = StoredProcedure<bool>("Sys_ClassDelByDepart", new SugarParameter[] {
+            var result = StoredProcedureToBool("Sys_ClassDelByDepart", new SugarParameter[] {
                 new SugarParameter("@TableName",tableName,typeof(String)),
                 new SugarParameter("@DelId",id,typeof(Int32)),
                 new SugarParameter("@DepartId",departId,typeof(Int32)),
@@ -735,7 +735,7 @@ namespace OA.Bll
         /// <returns>是否执行成功</returns>
         public bool Up(int moveId, int step)
         {
-            var result = StoredProcedure<bool>("Sys_ClassUp", new SugarParameter[] {
+            var result = StoredProcedureToBool("Sys_ClassUp", new SugarParameter[] {
                 new SugarParameter("@TableName",tableName,typeof(String)),
                 new SugarParameter("@MoveId",moveId,typeof(Int32)),
                 new SugarParameter("@Step",step,typeof(Int32)),
@@ -747,7 +747,7 @@ namespace OA.Bll
 
         public bool Up(int moveId, int step, int departId)
         {
-            var result = StoredProcedure<bool>("Sys_ClassUpByDepart", new SugarParameter[] {
+            var result = StoredProcedureToBool("Sys_ClassUpByDepart", new SugarParameter[] {
                 new SugarParameter("@TableName",tableName,typeof(String)),
                 new SugarParameter("@MoveId",moveId,typeof(Int32)),
                 new SugarParameter("@Step",step,typeof(Int32)),
@@ -764,7 +764,7 @@ namespace OA.Bll
         /// <returns>是否执行成功</returns>
         public bool Down(int moveId, int step)
         {
-            var result = StoredProcedure<bool>("Sys_ClassDown", new SugarParameter[] {
+            var result = StoredProcedureToBool("Sys_ClassDown", new SugarParameter[] {
                 new SugarParameter("@TableName",tableName,typeof(String)),
                 new SugarParameter("@MoveId",moveId,typeof(Int32)),
                 new SugarParameter("@Step",step,typeof(Int32)),
@@ -776,7 +776,7 @@ namespace OA.Bll
 
         public bool Down(int moveId, int step, int departId)
         {
-            var result = StoredProcedure<bool>("Sys_ClassDownByDepart", new SugarParameter[] {
+            var result = StoredProcedureToBool("Sys_ClassDownByDepart", new SugarParameter[] {
                 new SugarParameter("@TableName",tableName,typeof(String)),
                 new SugarParameter("@MoveId",moveId,typeof(Int32)),
                 new SugarParameter("@Step",step,typeof(Int32)),
@@ -794,7 +794,7 @@ namespace OA.Bll
         /// <returns></returns>
         public bool Prev(int moveId)
         {
-            var result = StoredProcedure<bool>("Sys_ClassPrew", new SugarParameter[] {
+            var result = StoredProcedureToBool("Sys_ClassPrew", new SugarParameter[] {
                 new SugarParameter("@TableName",tableName,typeof(String)),
                 new SugarParameter("@MoveId",moveId,typeof(Int32)),
                 new SugarParameter("@Flag",false,true)
@@ -805,7 +805,7 @@ namespace OA.Bll
 
         public bool Prev(int moveId, int departId)
         {
-            var result = StoredProcedure<bool>("Sys_ClassPrewByDepart", new SugarParameter[] {
+            var result = StoredProcedureToBool("Sys_ClassPrewByDepart", new SugarParameter[] {
                 new SugarParameter("@TableName",tableName,typeof(String)),
                 new SugarParameter("@MoveId",moveId,typeof(Int32)),
                 new SugarParameter("@DepartId",departId,typeof(Int32)),
@@ -822,7 +822,7 @@ namespace OA.Bll
         /// <returns></returns>
         public bool Next(int moveId)
         {
-            var result = StoredProcedure<bool>("Sys_ClassNext", new SugarParameter[] {
+            var result = StoredProcedureToBool("Sys_ClassNext", new SugarParameter[] {
                 new SugarParameter("@TableName",tableName,typeof(String)),
                 new SugarParameter("@MoveId",moveId,typeof(Int32)),
                 new SugarParameter("@Flag",false,true)
@@ -833,7 +833,7 @@ namespace OA.Bll
 
         public bool Next(int moveId, int departId)
         {
-            var result = StoredProcedure<bool>("Sys_ClassNextByDepart", new SugarParameter[] {
+            var result = StoredProcedureToBool("Sys_ClassNextByDepart", new SugarParameter[] {
                 new SugarParameter("@TableName",tableName,typeof(String)),
                 new SugarParameter("@MoveId",moveId,typeof(Int32)),
                 new SugarParameter("@DepartId",departId,typeof(Int32)),
@@ -1092,7 +1092,13 @@ namespace OA.Bll
         {
             var db = SugarDao.GetInstance(DbName);
 
-            return db.Ado.SqlQuery<T>("select * from @tableName where Id=@id", new { tableName = tableName, id = id }).FirstOrDefault();
+            var name = typeof(T).Name;
+
+            return db.Queryable<T>().Where(" Id=@id", new { id = id }).First();
+            //return db.Ado.SqlQuery<T>("select * from @tableName as a where Id=@id", new List<SugarParameter>() {
+            //    new SugarParameter("@tableName",tableName),
+            //    new SugarParameter("@id",id)
+            //}).FirstOrDefault();
         }
 
         public T First(int id, int departId)
@@ -1356,14 +1362,14 @@ namespace OA.Bll
                     dic.Add(tp.Name.ToLower(), tp.GetValue(t, null));
                 }
                 sysClass.Id = (int)dic["id"];
-                sysClass.ParId = (int)dic["parid"];
+                sysClass.ParId = (int?)dic["parid"];
                 sysClass.ClassName = (string)dic["classname"];
                 sysClass.ParPath = (string)dic["parpath"];
-                sysClass.ChildNum = (int)dic["childnum"];
-                sysClass.Depth = (int)dic["depth"];
-                sysClass.Sequence = (int)dic["sequence"];
-                sysClass.BeLock = (bool)dic["belock"];
-                sysClass.DepartId = (int)dic["departid"];
+                sysClass.ChildNum = (int?)dic["childnum"];
+                sysClass.Depth = (int?)dic["depth"];
+                sysClass.Sequence = (int?)dic["sequence"];
+                sysClass.BeLock = (bool?)dic["belock"];
+                sysClass.DepartId = (int?)dic["departid"];
             }
             return sysClass;
         }

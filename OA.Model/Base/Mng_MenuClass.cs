@@ -3,7 +3,7 @@ using System.Text;
 namespace OA.Model
 {
     //Mng_MenuClass
-    public class Mng_MenuClass
+    public partial class Mng_MenuClass
     {
 
         public Mng_MenuClass()

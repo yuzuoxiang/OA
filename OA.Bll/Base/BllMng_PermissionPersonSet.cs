@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SqlSugarTool;
 
-namespace OA.Bll.Base
+namespace OA.Bll
 {
     public class BllMng_PermissionPersonSet : BllCommonBase<Mng_PermissionPersonSet>
     {

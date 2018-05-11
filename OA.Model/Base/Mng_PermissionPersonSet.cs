@@ -3,7 +3,7 @@ using System.Text;
 namespace OA.Model
 {
     //Mng_PermissionPersonSet
-    public class Mng_PermissionPersonSet
+    public partial class Mng_PermissionPersonSet
     {
         public Mng_PermissionPersonSet()
         {

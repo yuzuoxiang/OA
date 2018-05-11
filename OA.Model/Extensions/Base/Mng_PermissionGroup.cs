@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OA.Model.Extensions.Base
+namespace OA.Model
 {
     public partial class Mng_PermissionGroup
     {

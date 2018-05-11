@@ -3,7 +3,7 @@ using System.Text;
 namespace OA.Model
 {
     //Mng_PermissionGroup
-    public class Mng_PermissionGroup
+    public partial class Mng_PermissionGroup
     {
 
         public Mng_PermissionGroup()

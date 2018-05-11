@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data;
 
 namespace OA.Bll
 {
@@ -249,16 +250,23 @@ namespace OA.Bll
         #endregion
 
         #region 存储过程
-        public K StoredProcedure<K>(string tableName, SugarParameter[] sugarParameters)
+        public string StoredProcedureToString(string tableName, SugarParameter[] sugarParameters)
         {
             var db = SugarDao.GetInstance(DBName);
 
-            var result = db.Ado.UseStoredProcedure<K>(() =>
-             {
-                 return db.Ado.SqlQueryDynamic(tableName, sugarParameters);
-             });
+            var result = db.Ado.UseStoredProcedure(() =>
+            {
+                return db.Ado.SqlQueryDynamic(tableName, sugarParameters);
+            });
 
-            return result;
+            return sugarParameters[sugarParameters.Count() - 1].Value.ToString();
+        }
+
+        public bool StoredProcedureToBool(string tableName, SugarParameter[] sugarParameters)
+        {
+            var result = StoredProcedureToString(tableName, sugarParameters);
+
+            return result == "1";
         }
         #endregion
     }

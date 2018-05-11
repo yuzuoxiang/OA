@@ -3,7 +3,7 @@ using System.Text;
 namespace OA.Model
 {
     //Mng_DepartmentClass
-    public class Mng_DepartmentClass
+    public partial class Mng_DepartmentClass
     {
 
         public Mng_DepartmentClass()

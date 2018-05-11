@@ -207,38 +207,6 @@ namespace OA.Bll
         }
 
         /// <summary>
-        /// 获取分页列表
-        /// </summary>
-        /// <param name="searchType">搜索字段</param>
-        /// <param name="keyword">搜索关键词</param>
-        /// <param name="page">页码</param>
-        /// <param name="pageSize">每页条数</param>
-        /// <param name="records">返回总记录数</param>
-        /// <returns>返回记录集</returns>
-        public DataTable PageListManage(string searchType, string keyword, int page, int pageSize, ref int records)
-        {
-            StringBuilder sql = new StringBuilder("1=1");
-            if (!string.IsNullOrEmpty(searchType) && !string.IsNullOrEmpty(keyword))
-            {
-                sql.Append(" and " + CheckSqlValue(searchType) + " like '" + CheckSqlKeyword(keyword) + "%'");
-            }
-            //return GetPageList2("dbo.Mng_User", "id,UserName,RealName,Sex,logintime,logintimes,injob,departid", sql.ToString(), "order by UserName", pageSize, page, ref records).Tables[0];
-
-            var db = SugarDao.GetInstance(DbName);
-            StoredProcedure<DataTable>("Sys_Page2", new SugarParameter[]{
-                new SugarParameter("@tb","dbo.Mng_User",typeof(String)),
-                new SugarParameter("@collist","id,UserName,RealName,Sex,logintime,logintimes,injob,departid",typeof(String)),
-                new SugarParameter("@where",sql.ToString(),typeof(String)),
-                new SugarParameter("@orderby","order by UserName",typeof(String)),
-                new SugarParameter("@pagesize",pageSize,typeof(String)),
-                new SugarParameter("@page",page,typeof(String)),
-                new SugarParameter("@records",records,true)
-            });
-
-            return new DataTable();
-        }
-
-        /// <summary>
         /// 分页列表
         /// </summary>
         /// <param name="userName"></param>
@@ -321,7 +289,7 @@ namespace OA.Bll
         /// </summary>
         /// <param name="onlyInjob"></param>
         /// <returns></returns>
-        public IEnumerable<Mng_User> GetAllList(bool onlyInjob, int departId = 0)
+        public List<Mng_User> GetAllList(bool onlyInjob, int departId = 0)
         {
             var db = SugarDao.GetInstance(DbName);
 
