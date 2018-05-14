@@ -9,11 +9,11 @@ namespace Tools.Config
         {
             try
             {
-                var dd = ConfigurationManager.GetSection("UploadConfig");
-                uploadConfig = new UploadConfig();
+                uploadConfig = ConfigurationManager.GetSection("UploadConfig") as UploadConfig;
             }
             catch (System.Exception ex)
             {
+
                 throw;
             }
         }
@@ -21,5 +21,6 @@ namespace Tools.Config
         {
             return uploadConfig;
         }
+
     }
 }

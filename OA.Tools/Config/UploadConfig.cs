@@ -1,8 +1,9 @@
 ﻿using System.Configuration;
+using System.Xml;
 
 namespace Tools.Config
 {
-    public class UploadConfig: ConfigurationSection
+    public class UploadConfig : ConfigurationSection
     {
         [ConfigurationProperty("Settings")]
         public SettingsCollection Settings
@@ -21,5 +22,6 @@ namespace Tools.Config
                 return this["SiteOptions"] as SiteOptionCollection;
             }
         }
+         
     }
 }
